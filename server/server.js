@@ -98,6 +98,14 @@ app.get('/users/me',authenticate,(req,res)=>{
     res.send(req.user);
    
 });
+//get all users
+app.get('/users',(req,res)=>{
+    User.find().then((users)=>{
+        res.send({users})
+    },(e)=>{
+        res.status(400).send(e);
+    })
+});
 
 app.listen(port,()=>{
     console.log(`Started  up at port ${port}`);
