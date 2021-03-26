@@ -31,12 +31,12 @@ app.get('/todos',authenticate,(req,res)=>{
     })
 });
 //get a single todo with id
-app.get('/todos/:id',(req,res)=>{
+app.get('/todos/:id',authenticate,(req,res)=>{
     var id = req.params.id;
     if(!ObjectID.isValid(id)){
         return res.status(404).send();
     }
-    Todo.findById(id)
+    Todo.findOne({_id:id,_creator:req.user._id})
     .then((todo)=>{
         if(!todo){
             return res.status(404).send();
@@ -52,7 +52,7 @@ app.delete('/todos/:id',(req,res)=>{
     if(!ObjectID.isValid(id)){
         return res.status(404).send();
     }
-    Todo.findByIdAndRemove(id).then((todo)=>{
+    Todo.findOneAndRemove({_id:id,_creator:req.user._id}).then((todo)=>{
         if(!todo){
             return res.status(404).send();
         }
@@ -73,7 +73,7 @@ app.patch('/todos/:id',(req,res)=>{
         body.completed = false;
         body.completedAt = null;
     }
-    Todo.findByIdAndUpdate(id,{$set:body},{new:true}).then((todo)=>{
+    Todo.findOneAndUpdate({_id:id,_creator:req.user._id},{$set:body},{new:true}).then((todo)=>{
         if(!todo){
             return res.status(404).send();
         }
